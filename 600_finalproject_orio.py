@@ -41,7 +41,8 @@ import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv('wfp_food_prices_phl.csv')
+url = "https://drive.google.com/file/d/1RUQ4hyLFf0zoF8Dy6MUxCRKa99hssoOT/view?usp=sharing"
+df = pd.read_csv(url)
 
 
 df.head(10)
