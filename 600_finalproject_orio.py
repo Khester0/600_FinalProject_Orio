@@ -44,20 +44,7 @@ import streamlit as st
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
-try:
-    # If the file somehow exists locally, read it
-    df = pd.read_csv('wfp_food_prices_phl.csv')
-except:
-    # FALLBACK: Create a dummy layout dataset so the app boots up safely without crashing
-    st.warning("⚠️ Main dataset not found on server. Loading dummy data dashboard structure.")
-    dummy_data = {
-        'date': pd.date_range(start='2023-01-01', periods=100),
-        'market': ['Manila'] * 100,
-        'price': np.random.uniform(50, 150, 100),
-        'item': ['Rice'] * 100
-    }
-    df = pd.DataFrame(dummy_data)
-
+df = pd.read_csv('wfp_food_prices_phl.csv')
 
 df.head(10)
 
