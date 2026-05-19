@@ -48,6 +48,10 @@ file_id = "1RUQ4hyLFf0zoF8Dy6MUxCRKa99hssoOT"
 gdrive_url = f"https://drive.google.com{file_id}"
 output_csv = "wfp_food_prices_phl.csv"
 
+if os.path.exists(output_csv):
+    os.remove(output_csv)
+
+
 if not os.path.exists(output_csv):
     with st.spinner("Downloading large dataset from Google Drive... Please wait."):
         gdown.download(gdrive_url, output_csv, quiet=False)
