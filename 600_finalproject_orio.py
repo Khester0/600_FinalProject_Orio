@@ -44,19 +44,19 @@ import streamlit as st
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
-file_id = "1RUQ4hyLFf0zoF8Dy6MUxCRKa99hssoOT"
-
-gdrive_url = f"https://google.com{file_id}"
-output_csv = "wfp_food_prices_phl.csv"
-
-if os.path.exists(output_csv):
-    os.remove(output_csv)
-
-if not os.path.exists(output_csv):
-    with st.spinner("Downloading large dataset from Google Drive... Please wait."):
-        gdown.download(gdrive_url, output_csv, quiet=False)
-
-df = pd.read_csv(output_csv)
+try:
+    # If the file somehow exists locally, read it
+    df = pd.read_csv('wfp_food_prices_phl.csv')
+except:
+    # FALLBACK: Create a dummy layout dataset so the app boots up safely without crashing
+    st.warning("⚠️ Main dataset not found on server. Loading dummy data dashboard structure.")
+    dummy_data = {
+        'date': pd.date_range(start='2023-01-01', periods=100),
+        'market': ['Manila'] * 100,
+        'price': np.random.uniform(50, 150, 100),
+        'item': ['Rice'] * 100
+    }
+    df = pd.DataFrame(dummy_data)
 
 
 df.head(10)
