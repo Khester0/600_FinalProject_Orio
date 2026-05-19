@@ -46,6 +46,15 @@ from sklearn.model_selection import train_test_split
 
 df = pd.read_csv('wfp_food_prices_phl.csv')
 
+for col in df.columns:
+    if df[col].dtype == 'object' or str(df[col].dtype) == 'string':
+        df[col] = df[col].astype(str)
+
+# 3. Double-check your Date column conversion if applicable
+if 'date' in df.columns:
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+
+
 df.head(10)
 
 print(df.info())
