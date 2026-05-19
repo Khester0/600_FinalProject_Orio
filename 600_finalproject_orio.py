@@ -38,11 +38,22 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import gdown
+import os
+import sreamlit as st    
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
-url = "https://drive.google.com/file/d/1RUQ4hyLFf0zoF8Dy6MUxCRKa99hssoOT/view?usp=sharing"
-df = pd.read_csv(url)
+file_id = "1RUQ4hyLFf0zoF8Dy6MUxCRKa99hssoOT"
+output_csv = "wfp_food_prices_phl.csv"
+gdrive_url = f"https://google.com{file_id}"
+
+if not os.path.exists(output_csv):
+    with st.spinner("Downloading large dataset from Google Drive... Please wait."):
+        gdown.download(gdrive_url, output_csv, quiet=False)
+
+
+df = pd.read_csv(output_csv)
 
 
 df.head(10)
