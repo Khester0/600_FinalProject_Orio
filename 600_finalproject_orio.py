@@ -50,9 +50,10 @@ st.config.set_option("client.showErrorDetails", True)
 df = pd.read_csv('wfp_food_prices_phl.csv')
 
 for col in df.columns:
-    if df[col].dtype == 'string' or df[col].dtype == 'object':
+    # If a column is a pandas specialized String Extension or an generic Object type
+    if str(df[col].dtype) in ['string', 'object', 'category']:
+        # Force it to a native, clean standard Python string format
         df[col] = df[col].astype(str)
-
 df = pd.DataFrame(df.to_dict(orient='list'))
 df.head(10)
 
