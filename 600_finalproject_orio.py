@@ -40,7 +40,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import gdown
 import os
-import sreamlit as st    
+import streamlit as st    
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
