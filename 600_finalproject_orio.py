@@ -50,10 +50,7 @@ st.config.set_option("client.showErrorDetails", True)
 df = pd.read_csv('wfp_food_prices_phl.csv')
 
 for col in df.columns:
-    if str(df[col].dtype) in ['string', 'object', 'category', 'StringDtype']:
-        # fillna('None') prevents hidden nulls from breaking the formatting link
-        df[col] = df[col].fillna('None').astype(str).map(str)
-    elif 'date' in col.lower():
+    if df[col].dtype == 'string' or df[col].dtype == 'object':
         df[col] = df[col].astype(str)
 
 df = pd.DataFrame(df.to_dict(orient='list'))
@@ -258,7 +255,8 @@ axes[1].set_title('Distribution of Model Residuals (Error Spread)')
 
 
 plt.tight_layout()
-plt.show()
+st.pyplot(fig)
+plt.close(fig)    
 
 """**1.  What are the main evaluation metrics for each model on the test set?**
 The test set metrics for the Linear Regression Baseline are an MAE of 18.46, RMSE of 32.13, and an R2 score of 0.932601. The metrics for the Random Forest Regressor are an MAE of 13.52, RMSE of 22.37, and an R2 score 0.967329.
@@ -318,7 +316,8 @@ axes[4].legend()
 
 fig.delaxes(axes[5])
 plt.tight_layout()
-plt.show()
+st.pyplot(fig)
+plt.close(fig)
 
 """1. **What trends or patters do you see in the main metric over time?**
 Looking at line plot, there is a clear, long-term upward macroeconomic trajectory inidicating
