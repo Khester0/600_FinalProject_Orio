@@ -45,8 +45,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
 file_id = "1RUQ4hyLFf0zoF8Dy6MUxCRKa99hssoOT"
-output_csv = "wfp_food_prices_phl.csv"
 gdrive_url = f"https://google.com{file_id}"
+output_csv = "wfp_food_prices_phl.csv"
 
 if not os.path.exists(output_csv):
     with st.spinner("Downloading large dataset from Google Drive... Please wait."):
