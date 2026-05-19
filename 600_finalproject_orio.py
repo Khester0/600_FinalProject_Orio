@@ -44,7 +44,7 @@ import streamlit as st
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
-file_id = "1RUQ4hyLFf0zoF8Dy6MUxCRKa99hssoOT"
+file_id = "/1RUQ4hyLFf0zoF8Dy6MUxCRKa99hssoOT"
 gdrive_url = f"https://google.com{file_id}"
 output_csv = "wfp_food_prices_phl.csv"
 
