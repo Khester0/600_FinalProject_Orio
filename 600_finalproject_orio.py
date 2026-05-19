@@ -47,13 +47,13 @@ from sklearn.model_selection import train_test_split
 df = pd.read_csv('wfp_food_prices_phl.csv')
 
 for col in df.columns:
-    # If the column contains dates or timestamps, turn them into readable text strings
-    if pd.api.types.is_datetime64_any_dtype(df[col]) or 'date' in col.lower():
-        df[col] = df[col].astype(str)
-    # Convert mixed text data objects to standard clean strings
-    elif df[col].dtype == 'object' or str(df[col].dtype) == 'string':
+    if str(df[col].dtype) in ['string', 'object', 'category', 'StringDtype']:
+        # fillna('None') prevents hidden nulls from breaking the formatting link
+        df[col] = df[col].fillna('None').astype(str).map(str)
+    elif 'date' in col.lower():
         df[col] = df[col].astype(str)
 
+df = pd.DataFrame(df.to_dict(orient='list'))
 df.head(10)
 
 print(df.info())
