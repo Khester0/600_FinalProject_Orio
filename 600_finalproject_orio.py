@@ -44,6 +44,9 @@ import streamlit as st
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
+st.set_page_config(layout="wide")
+st.config.set_option("client.showErrorDetails", True)
+
 df = pd.read_csv('wfp_food_prices_phl.csv')
 
 for col in df.columns:
