@@ -47,15 +47,24 @@ from sklearn.model_selection import train_test_split
 st.set_page_config(layout="wide")
 st.config.set_option("client.showErrorDetails", True)
 
-df = pd.read_csv('wfp_food_prices_phl.csv')
+@st.cache_data
+def load_and_sanitize_data():
+    # Load the raw dataset
+    raw_df = pd.read_csv('wfp_food_prices_phl.csv')
+    
+    # SYSTEM FIX: Convert columns directly into raw dictionary elements first, 
+    # then reconstruct a vanilla DataFrame. This strips away advanced Pandas 2.x 
+    # hidden extension string wrappers that cause the Apache Arrow serialization crash.
+    clean_df = pd.DataFrame(raw_df.to_dict(orient='list'))
+    
+    # Secondary protection loop
+    for col in clean_df.columns:
+        if str(clean_df[col].dtype) in ['string', 'object', 'category']:
+            clean_df[col] = clean_df[col].astype(str)
+            
+    return clean_df
 
-for col in df.columns:
-    # If a column is a pandas specialized String Extension or an generic Object type
-    if str(df[col].dtype) in ['string', 'object', 'category']:
-        # Force it to a native, clean standard Python string format
-        df[col] = df[col].astype(str)
-df = pd.DataFrame(df.to_dict(orient='list'))
-df.head(10)
+df = load_and_sanitize_data()
 
 print(df.info())
 print(df.describe(include='all'))
@@ -66,27 +75,45 @@ df.dtypes
 
 """How many missing values exist for each variable?"""
 
-print("\nMissing Values: ")
-print(df.isna().sum())
+col_data_1, col_data_2 = st.columns(2)
 
-plt.figure(figsize=(10,5))
-sns.histplot(df['price'], bins=50, kde=True)
-plt.title('Distribution of Prices')
-plt.show()
+with col_data_1:
+    st.subheader("📋 Dataset Variable Types")
+    dtypes_df = pd.DataFrame(df.dtypes, columns=['Data Type']).astype(str)
+    st.dataframe(dtypes_df, use_container_width=True)
 
-plt.figure(figsize=(12,6))
-sns.boxplot(data=df, x='category', y='price')
+with col_data_2:
+    st.subheader("❓ Missing Values per Variable")
+    missing_df = pd.DataFrame(df.isna().sum(), columns=['Missing Count'])
+    st.dataframe(missing_df, use_container_width=True)
+
+st.subheader("👀 Raw Interactive Data Preview (First 10 Rows)")
+st.dataframe(df.head(10), use_container_width=True)
+
+
+fig_hist, ax_hist = plt.subplots(figsize=(10, 5))
+sns.histplot(df['price'], bins=50, kde=True, ax=ax_hist, color='darkorange')
+ax_hist.set_title('Distribution of Prices')
+st.pyplot(fig_hist)
+plt.close(fig_hist)
+
+fig_box, ax_box = plt.subplots(figsize=(12, 6))
+sns.boxplot(data=df, x='category', y='price', ax=ax_box, palette='Set2')
 plt.xticks(rotation=45)
-plt.title('Price Distribution by Category')
-plt.show()
+ax_box.set_title('Price Distribution by Category')
+st.pyplot(fig_box)
+plt.close(fig_box)
 
-df['date'] = pd.to_datetime(df['date'])
+df_time_prep = df.copy()
+df_time_prep['date'] = pd.to_datetime(df_time_prep['date'])
 
-plt.figure(figsize=(15,6))
-df.groupby('date')['price'].mean().plot()
-plt.title('Average National Food Price Trend (2000-2026)')
-plt.ylabel('Price(PHP)')
-plt.show()
+fig_line, ax_line = plt.subplots(figsize=(15, 6))
+df_time_group = df_time_prep.groupby('date')['price'].mean().reset_index()
+ax_line.plot(df_time_group['date'], df_time_group['price'], color='teal', linewidth=2)
+ax_line.set_title('Average National Food Price Trend (2000-2026)')
+ax_line.set_ylabel('Price (PHP)')
+st.pyplot(fig_line)
+plt.close(fig_line)
 
 """### **EDA Questions:**
 
@@ -116,11 +143,11 @@ print(f"Duplicates found: {duplicates}")
 """Feature Engineering"""
 
 df['date'] = pd.to_datetime(df['date'])
-df.loc[:, 'year'] = df['date'].dt.year
+df['year'] = df['date'].dt.year
 df['month'] = df['date'].dt.month
 df['price_lag_3'] = df.groupby(['market_id', 'commodity_id'])['price'].shift(3)
 
-df= df.dropna(subset=['price_lag_3'])
+df = df.dropna(subset=['price_lag_3']).copy()
 
 """Outlier Handling      """
 
